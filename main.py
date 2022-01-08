@@ -1,12 +1,30 @@
 import sys
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QApplication, QMessageBox, QMainWindow, QAction
 import json
 import os
 from design import Ui_Main
 import openpyxl
+import atexit
 
 
+# очистка json перед закрытием
+
+def clean_json():
+    pasport = {'pasport_ishodnie_dannye' : {
+                        "folder_with_logs" : '',
+                        "operator" : '',
+                        "object_name" : '',
+                        "path_for_document" : '',
+                        "file_name" : '',
+                        }}
+    with open("data.json","w") as write_file: 
+        json.dump(pasport,write_file)
+    print('wow')
+atexit.register(clean_json)
+
+
+# работа с excel
 def file_excel():
     with open ('data.json','r') as file:
         data = json.load(file)
@@ -15,22 +33,27 @@ def file_excel():
     os.chdir(file_path)
 
 
+# основной класс
 
 class Main(QMainWindow, Ui_Main):
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
         self.setupUi(self)
         
+        
+
+
         self.pushButton1.clicked.connect(self.ishodnie_dannye)
         self.pushButton2.clicked.connect(self.pasport_AFS_1)
         self.pushButton3.clicked.connect(self.jurnal_AFS)
+        
         
 
 
     def main_menu(self):
         self.QtStack.setCurrentIndex(0)
         
-
+    
 
 
 ########                              ############
@@ -38,6 +61,7 @@ class Main(QMainWindow, Ui_Main):
 #       страница с исходными данными
 ########                              ############
 ########                              ############
+
 
     def ishodnie_dannye(self):
         self.QtStack.setCurrentIndex(1)
@@ -66,8 +90,12 @@ class Main(QMainWindow, Ui_Main):
             "path_for_document" : path_for_document,
             "file_name" : file_name,
             }}
-            with open("data.json","w") as write_file: 
-                json.dump(pasport,write_file) 
+
+            with open ('data.json','r') as file:
+                data = json.load(file)
+            data.update(pasport)
+            with open('data.json',"w") as file:
+                json.dump(data,file)
             self.main_menu()
             
 
@@ -315,6 +343,7 @@ class Main(QMainWindow, Ui_Main):
 
         self.pushButton_primechania_2.clicked.connect(btn_next)
 
+    
 
 ########                              ############
 ########                              ############
@@ -325,6 +354,7 @@ class Main(QMainWindow, Ui_Main):
     def jurnal_AFS(self):
         self.QtStack.setCurrentIndex(7)
         self.pushButton_jurnal.clicked.connect(self.main_menu)
+        
 
 
 if __name__ == '__main__':
