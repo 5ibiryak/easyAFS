@@ -358,7 +358,7 @@ class Main(QMainWindow, Ui_Main):
             num = 0
             #print(Mission_number)
             add_ws(Mission_number)
-            
+            os.chdir(json_path)
             self.main_menu()
             
         self.pushButton_primechania_2.clicked.connect(btn_next)
@@ -567,7 +567,6 @@ class Main(QMainWindow, Ui_Main):
                 
         # добавление листа в таблицу (отдельный АФС)
         def add_ws(num):
-            previous_path=os.getcwd()
             num = num
             file_name = ''
             file_path = ''
@@ -727,7 +726,7 @@ class Main(QMainWindow, Ui_Main):
                     
                     workbook.save(filename=file_name)
                     workbook.close()
-            os.chdir(previous_path)
+            
 
 
 ########                              ############
