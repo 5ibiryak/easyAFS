@@ -353,6 +353,7 @@ class Main(QMainWindow, Ui_Main):
             if (excel_created!=True):
                 create_excel_doc()
                 add_styles_to_wb()
+                add_journal()
                 excel_created = True
             num = 0
             #print(Mission_number)
@@ -430,10 +431,139 @@ class Main(QMainWindow, Ui_Main):
                 usual_style.alignment = Alignment(horizontal='left',vertical='center', wrap_text=True, shrink_to_fit=False)
                 workbook.add_named_style(usual_style)
                 
+                jtitle_style = NamedStyle(name="jtitle_style")
+                jtitle_style.font = Font(name = 'Arial', bold=True, size=11)
+                jtitle_style.alignment = Alignment(horizontal='center',vertical='center', wrap_text=True, shrink_to_fit=False)
+                jtitle_style.border = Border(left=Side(border_style='medium', color='FF000000'), right=Side(border_style='medium', color='FF000000'), top=Side(border_style='medium', color='FF000000'), bottom=Side(border_style='medium',color='FF000000'))
+                workbook.add_named_style(jtitle_style)
+                
+                rotated_style = NamedStyle(name="rotated_style")
+                rotated_style.font = Font(name = 'Arial', bold=True, size=11)
+                rotated_style.alignment = Alignment(horizontal='center',vertical='center', wrap_text=True, shrink_to_fit=False, textRotation=90)
+                rotated_style.border = Border(left=Side(border_style='medium', color='FF000000'), right=Side(border_style='medium', color='FF000000'), top=Side(border_style='medium', color='FF000000'), bottom=Side(border_style='medium',color='FF000000'))
+                workbook.add_named_style(rotated_style)
+                
                 # сохранить и закрыть файл
                 workbook.save(filename=file_name)
                 workbook.close()
                 
+        #добавление журнала полетов
+        def add_journal():
+            file_name = ''
+            file_path = ''
+            ### директория json
+            global json_path
+            os.chdir(json_path)
+            with open ('data.json','r') as file:
+                data = json.load(file)
+                file_name = data["pasport_ishodnie_dannye"]["file_name"]
+                file_path = data["pasport_ishodnie_dannye"]["path_for_document"]
+            file_name = file_name + ".xlsx"
+            os.chdir(file_path)
+            try:
+                myfile = open(file_name, "r+")
+            except IOError:
+                print("Файл открыт")
+            else:
+                workbook = load_workbook(file_name)
+                sheet_name = "Журнал полетов"
+                #print(sheet_name)
+                if sheet_name in workbook.sheetnames:
+                    pass
+                else:
+                    worksheet_journal = workbook.create_sheet(sheet_name)
+                    row = 1
+                    column = 2
+                    frame_1 = ["Дата полета", "БВС", "№ борта", "№ полета", "Наименование объекта", "Тип съемки", "Вид съемки", "S/n камеры"]
+                    frame_2 = ["левая/ надирная", "правая"]
+                    frame_3 = ["Для обработки", "Примечания", "Полетная база 1"]
+                    frame_4 = ["порядковый номер точки", "прибор (назв, номер)", "порядковый номер лога", "высота прибора, мм, вертикальная, наклонная", "название файла"]
+                    frame_5 = ["Время полета", "Количество фотографий"]
+                    
+                    for item in frame_1 :
+                        worksheet_journal.cell(row=row, column=column).value = item
+                        column += 1
+                    
+                    worksheet_journal.merge_cells('A1:A3')
+                    worksheet_journal.column_dimensions['A'].width = float(8.09+0.71)
+                    worksheet_journal.merge_cells('B1:B3')
+                    worksheet_journal.column_dimensions['B'].width = float(12.55+0.71)
+                    worksheet_journal.merge_cells('C1:C3')
+                    worksheet_journal.column_dimensions['C'].width = float(12.55+0.71)
+                    worksheet_journal.merge_cells('D1:D3')
+                    worksheet_journal.column_dimensions['D'].width = float(12.55+0.71)
+                    worksheet_journal.merge_cells('E1:E3')
+                    worksheet_journal.column_dimensions['E'].width = float(12.55+0.71)
+                    worksheet_journal.merge_cells('F1:F3')
+                    worksheet_journal.column_dimensions['F'].width = float(42.27+0.71)
+                    worksheet_journal.merge_cells('G1:G3')
+                    worksheet_journal.column_dimensions['G'].width = float(12.55+0.71)
+                    worksheet_journal.merge_cells('H1:H3')
+                    worksheet_journal.column_dimensions['H'].width = float(8.09+0.71)
+                    worksheet_journal.merge_cells('I1:J1')
+                    worksheet_journal.column_dimensions['I'].width = float(23.64+0.71)
+                    worksheet_journal.column_dimensions['J'].width = float(12.91+0.71)
+                    
+                    row = 2
+                    column = 9
+                    for item in frame_2 :
+                        worksheet_journal.cell(row=row, column=column).value = item
+                        column += 1
+                    
+                    worksheet_journal.merge_cells('I2:I3')
+                    worksheet_journal.merge_cells('J2:J3')
+                    
+                    row = 1
+                    column = 11
+                    for item in frame_3 :
+                        worksheet_journal.cell(row=row, column=column).value = item
+                        column += 1
+                    
+                    worksheet_journal.merge_cells('K1:K3')
+                    worksheet_journal.column_dimensions['K'].width = float(17.55+0.71)
+                    worksheet_journal.merge_cells('L1:L3')
+                    worksheet_journal.column_dimensions['L'].width = float(17.55+0.71)
+                    worksheet_journal.merge_cells('M1:Q1')
+                    worksheet_journal.column_dimensions['M'].width = float(10.91+0.71)
+                    worksheet_journal.column_dimensions['N'].width = float(10.91+0.71)
+                    worksheet_journal.column_dimensions['O'].width = float(14.18+0.71)
+                    worksheet_journal.column_dimensions['P'].width = float(17.91+0.71)
+                    worksheet_journal.column_dimensions['Q'].width = float(21.18+0.71)
+                    worksheet_journal.merge_cells('N2:P2')
+                    worksheet_journal.merge_cells('M2:M3')
+                    worksheet_journal.merge_cells('Q2:Q3')
+                    
+                    worksheet_journal['M2'].value = frame_4[0]
+                    worksheet_journal['N3'].value = frame_4[1]
+                    worksheet_journal['O3'].value = frame_4[2]
+                    worksheet_journal['P3'].value = frame_4[3]
+                    worksheet_journal['Q2'].value = frame_4[4]
+                    
+                    row = 1
+                    column = 18
+                    for item in frame_5 :
+                        worksheet_journal.cell(row=row, column=column).value = item
+                        column += 1
+                    
+                    worksheet_journal.merge_cells('R1:R3')
+                    worksheet_journal.column_dimensions['R'].width = float(12.36+0.71)
+                    worksheet_journal.merge_cells('S1:S3')
+                    worksheet_journal.column_dimensions['S'].width = float(8.09+0.71)
+                    
+                    for c in range(2, 20) :
+                        for r in range(1, 4):
+                            worksheet_journal.cell(row=r, column=c).style = 'jtitle_style'
+                    
+                    for c in range(2, 6) :
+                        for r in range(1, 2):
+                            worksheet_journal.cell(row=r, column=c).style = 'rotated_style'
+                    worksheet_journal['M2'].style = 'rotated_style'
+                    worksheet_journal['R1'].style = 'rotated_style'
+                    worksheet_journal['S1'].style = 'rotated_style'
+                    worksheet_journal.row_dimensions[3].height = float(62.0+0.71)
+                    
+                    workbook.save(filename=file_name)
+                    workbook.close()
                 
         # добавление листа в таблицу (отдельный АФС)
         def add_ws(num):
@@ -487,7 +617,7 @@ class Main(QMainWindow, Ui_Main):
                     worksheet_AFS1.merge_cells('A22:B22')
                     worksheet_AFS1.merge_cells('A29:B29')
                     
-                    #setting width of column B to 12.25
+                    #setting width of columns
                     worksheet_AFS1.column_dimensions['A'].width = float(48.6)
                     worksheet_AFS1.column_dimensions['B'].width = float(56.9)
                     
@@ -563,8 +693,38 @@ class Main(QMainWindow, Ui_Main):
                     worksheet_AFS1['B31'].value = data[AFS_name]["usage_problem"]
                     worksheet_AFS1['B32'].value = data[AFS_name]["incidents"]
                     
+                    ###добавление записи об АФС в журнал полетов
+                    worksheet_journal = workbook["Журнал полетов"]
+                    cur_row = int(num)+3
+                    for c in range(1, 20) :
+                        for r in range(cur_row, cur_row+1):
+                            worksheet_journal.cell(row=r, column=c).style = 'usual_style'
+                            worksheet_journal.cell(row=r, column=c).border = bd
+                            
+                    worksheet_journal['A'+str(cur_row)].value = 'АФС_'+str(num)
+                    worksheet_journal['B'+str(cur_row)].value = data[AFS_name]["Date"]
+                    worksheet_journal['C'+str(cur_row)].value = data[AFS_name]["UMA_name"]
+                    worksheet_journal['D'+str(cur_row)].value = data[AFS_name]["registry_number"]
+                    worksheet_journal['E'+str(cur_row)].value = data[AFS_name]["Mission_number"]
+                    worksheet_journal['F'+str(cur_row)].value = data["pasport_ishodnie_dannye"]["object_name"]
+                    worksheet_journal['G'+str(cur_row)].value = data[AFS_name]["AFS_type"]
+                    worksheet_journal['H'+str(cur_row)].value = data[AFS_name]["AFS_mode"]
+                    worksheet_journal['I'+str(cur_row)].value = data[AFS_name]["pay_load_1"]
+                    worksheet_journal['J'+str(cur_row)].value = data[AFS_name]["pay_load_2"]
+                    worksheet_journal['K'+str(cur_row)].value = data[AFS_name]["processing_usage"]
+                    worksheet_journal['L'+str(cur_row)].value = ''
+                    worksheet_journal['M'+str(cur_row)].value = data[AFS_name]["home_point"]
+                    worksheet_journal['N'+str(cur_row)].value = data[AFS_name]["device"]
+                    worksheet_journal['O'+str(cur_row)].value = data[AFS_name]["log_number"]
+                    worksheet_journal['P'+str(cur_row)].value = data[AFS_name]["device_high"]
+                    worksheet_journal['Q'+str(cur_row)].value = data[AFS_name]["file_name"]
+                    worksheet_journal['R'+str(cur_row)].value = data[AFS_name]["Time"]
+                    worksheet_journal['S'+str(cur_row)].value = data[AFS_name]["shots_number"]
+                    
                     if 'Sheet1' in workbook.sheetnames:
                         workbook.remove(workbook['Sheet1'])
+                    
+                    
                     workbook.save(filename=file_name)
                     workbook.close()
             os.chdir(previous_path)
@@ -585,6 +745,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     showMain = Main()
     sys.exit(app.exec_())
+
 
 
 
