@@ -437,6 +437,7 @@ class Main(QMainWindow, Ui_Main):
                 
         # добавление листа в таблицу (отдельный АФС)
         def add_ws(num):
+            previous_path=os.getcwd()
             num = num
             file_name = ''
             file_path = ''
@@ -566,6 +567,7 @@ class Main(QMainWindow, Ui_Main):
                         workbook.remove(workbook['Sheet1'])
                     workbook.save(filename=file_name)
                     workbook.close()
+            os.chdir(previous_path)
 
 
 ########                              ############
